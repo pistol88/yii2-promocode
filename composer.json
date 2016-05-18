@@ -1,0 +1,36 @@
+{
+    "name": "pistol88/yii2-promocode",
+    "description": "Добавление функционала промокодов (купонов) на сайт, работает с pistol88/cart и pistol88/order",
+    "keywords": ["yii2", "yii2", "application", "coupons", "yii2-promocode", "promocodes", "pistol88"],
+    "homepage": "https://github.com/pistol88/yii2-promocode",
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "support": {
+        "source": "https://github.com/pistol88/yii2-promocode"
+    },
+    "authors": [
+        {
+            "name": "Ilya Pistol",
+            "email": "pistol88@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "*",
+        "yiisoft/yii2-bootstrap": "*",
+        "pistol88/yii2-order": "*",
+        "pistol88/yii2-cart": "*"
+    },
+    "config": {
+        "process-timeout": 1800
+    },
+    "autoload": {
+        "psr-4": {
+            "pistol88\\promocode\\": ""
+        }
+    },
+    "extra": {
+        "bootstrap": "pistol88\\promocode\\Bootstrap"
+    }
+}

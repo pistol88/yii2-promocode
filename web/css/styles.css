@@ -1,0 +1,7 @@
+.promo-code-enter input[type=text] {
+    width: 100px;
+}
+
+.promo-code-doscount {
+    color: red;
+}

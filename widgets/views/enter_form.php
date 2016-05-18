@@ -1,0 +1,17 @@
+<?php
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
+?>
+
+<div class="promo-code-enter">
+    <?php $form = ActiveForm::begin(['action' => ['/promocode/promo-code-use/enter']]); ?>
+        <?php if(yii::$app->promocode->has()) { ?>
+            <p class="promo-code-doscount">Ваша скидка: <?=yii::$app->promocode->get()->promocode->discount;?>%</p>
+        <?php } ?>
+        <input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken; ?>" />
+        <?=Html::input('text', 'promocode', yii::$app->promocode->getCode(), ['placeholder' => 'Промокод']) ?>
+        <?= Html::submitButton('Применить', ['class' => 'btn btn-success promo-code-enter-btn']) ?>
+        <?= Html::submitButton('Удалить', ['class' => 'btn btn-danger promo-code-clear-btn']) ?>
+    <?php ActiveForm::end(); ?>
+</div>
