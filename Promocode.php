@@ -4,11 +4,14 @@ namespace pistol88\promocode;
 use yii\base\Component;
 use pistol88\promocode\models\PromoCode as PromoCodeModel;
 use pistol88\promocode\models\PromoCodeUse;
+use pistol88\promocode\events\PromocodeEvent;
 use yii\web\Session;
 use yii;
 
 class Promocode extends Component
 {
+    const EVENT_PROMOCODE_ENTER = 'promocode_enter';
+    
     public $promocode = NULL;
     public $promocodeUse = NULL;
     
@@ -50,11 +53,14 @@ class Promocode extends Component
         $data['PromoCodeUse']['user_id'] = $this->userId;
         
         if ($this->promocodeUse->load($data) && $this->promocodeUse->validate()) {
+            
+            $promocodeEvent = new PromocodeEvent(['code' => $promocodeId, 'data' => $data['PromoCodeUse']]);
+            $this->trigger(self::EVENT_PROMOCODE_ENTER, $promocodeEvent);
+
             $this->clear();
             $this->promocodeUse->save();
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
