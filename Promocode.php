@@ -19,10 +19,10 @@ class Promocode extends Component
         $this->promocode = new PromoCodeModel;
         $this->promocodeUse = new PromoCodeUse;
         
+        $session = yii::$app->session;
+        
         if(!$userId = yii::$app->user->id) {
-            $session = new Session;
-            $session->open();
-            if (!$userId = $session['tmp_user_id']) {
+            if (!$userId = $session->get('tmp_user_id')) {
                 $userId = md5(time() . '-' . yii::$app->request->userIP . Yii::$app->request->absoluteUrl);
                 $session->set('tmp_user_id', $userId);
             }
@@ -93,5 +93,10 @@ class Promocode extends Component
         } else {
             return false;
         }
+    }
+    
+    public function checkExists($code)
+    {
+        return PromoCodeModel::findOne(['code' => $code]);
     }
 }
