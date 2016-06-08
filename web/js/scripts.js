@@ -5,6 +5,7 @@ if (typeof pistol88 == "undefined" || !pistol88) {
 pistol88.promocode = {
     init: function() {
         $(document).on('click', '.promo-code-enter-btn', this.enter);
+        $(document).on('change', '.promo-code-enter input', this.enter);
         $(document).on('click', '.promo-code-clear-btn', this.clear);
         
         return true;
@@ -18,7 +19,7 @@ pistol88.promocode = {
             function(json) {
                 if(json.result == 'success') {
                     $(form).find('input[type=text]').css({'border': '1px solid #ccc'}).val('');
-                    $(form).find('.promo-code-discount').remove();
+                    $(form).find('.promo-code-discount').show().html(json.message);
                     if(json.newCost) {
                         $('.pistol88-cart-price').html(json.newCost);
                     }
@@ -28,8 +29,6 @@ pistol88.promocode = {
                     console.log(json.errors);
                 }
 
-                alert(json.message);
-                
                 return true;
 
             }, "json");
@@ -53,7 +52,7 @@ pistol88.promocode = {
                     $(form).find('input[type=text]').css({'border': '1px solid red'});
                     console.log(json.errors);
                 }
-                alert(json.message);
+                $(form).find('.promo-code-discount').show().html(json.message);
                 
                 return true;
 

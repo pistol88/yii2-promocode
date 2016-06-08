@@ -9,6 +9,8 @@ use yii\widgets\ActiveForm;
     <?php $form = ActiveForm::begin(['action' => ['/promocode/promo-code-use/enter']]); ?>
         <?php if(yii::$app->promocode->has()) { ?>
             <p class="promo-code-discount">Ваша скидка: <?=yii::$app->promocode->get()->promocode->discount;?>%</p>
+        <?php } else { ?>
+            <p class="promo-code-discount" style="display: none;"></p>
         <?php } ?>
         <div class="input-group">
             <input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken; ?>" />
