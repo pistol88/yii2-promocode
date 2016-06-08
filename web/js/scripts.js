@@ -18,6 +18,7 @@ pistol88.promocode = {
             function(json) {
                 if(json.result == 'success') {
                     $(form).find('input[type=text]').css({'border': '1px solid #ccc'}).val('');
+                    $(form).find('.promo-code-discount').remove();
                     if(json.newCost) {
                         $('.pistol88-cart-price').html(json.newCost);
                     }
@@ -26,6 +27,7 @@ pistol88.promocode = {
                     $(form).find('input[type=text]').css({'border': '1px solid red'});
                     console.log(json.errors);
                 }
+
                 alert(json.message);
                 
                 return true;
