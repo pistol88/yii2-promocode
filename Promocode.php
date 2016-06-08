@@ -5,7 +5,6 @@ use yii\base\Component;
 use pistol88\promocode\models\PromoCode as PromoCodeModel;
 use pistol88\promocode\models\PromoCodeUse;
 use pistol88\promocode\events\PromocodeEvent;
-use yii\web\Session;
 use yii;
 
 class Promocode extends Component
@@ -53,7 +52,6 @@ class Promocode extends Component
         $data['PromoCodeUse']['user_id'] = $this->userId;
         
         if ($this->promocodeUse->load($data) && $this->promocodeUse->validate()) {
-            
             $promocodeEvent = new PromocodeEvent(['code' => $promocodeId, 'data' => $data['PromoCodeUse']]);
             $this->trigger(self::EVENT_PROMOCODE_ENTER, $promocodeEvent);
 
@@ -65,7 +63,8 @@ class Promocode extends Component
         }
     }
     
-    public function getCode() {
+    public function getCode()
+    {
         if(!$this->has()) {
             return false;
         }
@@ -73,7 +72,8 @@ class Promocode extends Component
         return $this->get()->promocode->code;
     }
     
-    public function find() {
+    public function find()
+    {
         $promocodeUse = $this->promocodeUse;
         return $promocodeUse::find()->where(['user_id' => $this->userId]);
     }
