@@ -8,7 +8,7 @@ class Bootstrap implements BootstrapInterface
 {
     public function bootstrap($app)
     {
-        if(!$app->get('promocode')) {
+        if(!$app->has('promocode')) {
             $app->set('promocode', ['class' => 'pistol88\promocode\Promocode']);
         }
         
