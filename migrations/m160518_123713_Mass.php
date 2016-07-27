@@ -36,7 +36,6 @@ class m160518_123713_Mass extends Migration {
                 'fk_promocode', '{{%promocode_use}}', 'promocode_id', '{{%promocode}}', 'id', 'CASCADE', 'CASCADE'
             );
 
-            $transaction->commit();
         } catch (Exception $e) {
             echo 'Catch Exception ' . $e->getMessage() . ' ';
         }
@@ -47,7 +46,6 @@ class m160518_123713_Mass extends Migration {
         try {
             $this->dropTable('{{%promocode}}');
             $this->dropTable('{{%promocode_use}}');
-            $transaction->commit();
         } catch (Exception $e) {
             echo 'Catch Exception ' . $e->getMessage() . ' ';
         }
