@@ -16,7 +16,6 @@ class PromoCodeController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-				'only' => ['create', 'update', 'index', 'delete'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -64,6 +63,23 @@ class PromoCodeController extends Controller
         }
     }
 
+    public function actionCreateWidget()
+    {
+        $model = new PromoCode();
+
+        $json = [];
+        
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $json['result'] = 'success';
+            $json['promocode'] = $model->code;
+        } else {
+            $json['result'] = 'fail';
+            $json['errors'] = current($model->getFirstErrors());
+        }
+        
+        return json_encode($json);
+    }
+    
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);

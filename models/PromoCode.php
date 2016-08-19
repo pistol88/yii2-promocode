@@ -17,6 +17,7 @@ class PromoCode extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['discount', 'status'], 'integer'],
             [['title'], 'string', 'max' => 256],
+            [['code'], 'unique'],
             [['code'], 'string', 'max' => 14]
         ];
     }

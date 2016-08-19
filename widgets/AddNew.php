@@ -1,0 +1,30 @@
+<?php
+namespace pistol88\promocode\widgets;
+
+use yii\helpers\Html;
+use yii\helpers\Url;
+use pistol88\promocode\models\PromoCode;
+use yii;
+
+class AddNew extends \yii\base\Widget
+{
+
+    public function init()
+    {
+        parent::init();
+
+        \pistol88\promocode\assets\AddNewAsset::register($this->getView());
+    }
+
+    public function run()
+    {
+        $model = new Promocode;
+        
+        $view = $this->getView();
+        $view->on($view::EVENT_END_BODY, function($event) use ($model) {
+            echo $this->render('add_new_form', ['model' => $model]);
+        });
+        
+        return Html::a('<span class="glyphicon glyphicon-plus"></span>', '#promoCodesCreate', ['title' => 'Добавить промокод', 'data-toggle' => 'modal', 'data-target' => '#promoCodesCreate', 'class' => 'btn btn-success']);
+    }
+}
