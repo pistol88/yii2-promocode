@@ -50,8 +50,8 @@ use yii\widgets\ActiveForm;
         </div>
         <div class="col-md-2">
             <?= $form->field($model, 'status')->dropDownList([
-                '0' => 'Отключен',
                 '1' => 'Активен',
+                '0' => 'Отключен',
             ]);
             ?>
         </div>

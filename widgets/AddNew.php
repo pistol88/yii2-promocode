@@ -9,6 +9,8 @@ use yii;
 class AddNew extends \yii\base\Widget
 {
 
+    public $name = '';
+    
     public function init()
     {
         parent::init();
@@ -19,6 +21,8 @@ class AddNew extends \yii\base\Widget
     public function run()
     {
         $model = new Promocode;
+        
+        $model->title = $this->name;
         
         $view = $this->getView();
         $view->on($view::EVENT_END_BODY, function($event) use ($model) {
