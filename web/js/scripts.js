@@ -23,8 +23,8 @@ pistol88.promocode = {
                     
                     setTimeout(function() { $('.promo-code-discount').hide('slow'); }, 2300);
                     
-                    if(json.newCost) {
-                        $('.pistol88-cart-price').html(json.newCost);
+                    if(json.informer) {
+                        $('.pistol88-cart-informer').replaceWith(json.informer);
                     }
                 }
                 else {
@@ -47,8 +47,8 @@ pistol88.promocode = {
                 if(json.result == 'success') {
                     $(form).find('input[type=text]').css({'border': '1px solid green'});
 
-                    if(json.newCost) {
-                        $('.pistol88-cart-price').html(json.newCost);
+                    if(json.informer) {
+                        $('.pistol88-cart-informer').replaceWith(json.informer);
                     }
                 }
                 else {
