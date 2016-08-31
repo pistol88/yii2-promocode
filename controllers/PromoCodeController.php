@@ -55,7 +55,11 @@ class PromoCodeController extends Controller
         $model = new PromoCode();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            if($backUrl = yii::$app->request->post('backUrl')) {
+                return $this->redirect($backUrl);
+            } else {
+                return $this->redirect(['index']);
+            }
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -85,7 +89,11 @@ class PromoCodeController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            if($backUrl = yii::$app->request->post('backUrl')) {
+                return $this->redirect($backUrl);
+            } else {
+                return $this->redirect(['index']);
+            }
         } else {
             return $this->render('update', [
                 'model' => $model,

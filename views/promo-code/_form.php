@@ -12,6 +12,8 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <input type="hidden" name="backUrl" value="<?=Html::encode(yii::$app->request->referrer);?>" />
+    
     <div class="row">
         <div class="col-md-6">
             <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
