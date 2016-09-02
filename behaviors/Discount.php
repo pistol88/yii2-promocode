@@ -7,11 +7,14 @@ use pistol88\cart\Cart;
 
 class Discount extends Behavior
 {
-
+    public $eventName = 'cart_cost';
+    
     public function events()
     {
+        $eventName = $this->eventName;
+
         return [
-            Cart::EVENT_CART_COST => 'doDiscount'
+            $eventName => 'doDiscount'
         ];
     }
 
@@ -24,6 +27,7 @@ class Discount extends Behavior
                 $event->cost = $event->cost-($event->cost*$persent)/100;
             }
         }
+
         return $this;
     }
 }
