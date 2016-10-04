@@ -5,6 +5,7 @@ use yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
+use yii\helpers\Html;
 use yii\filters\VerbFilter;
 use pistol88\cart\widgets\CartInformer;
 
@@ -41,7 +42,7 @@ class PromoCodeUseController extends Controller
                 $newCost = null;
             }
 
-            return json_encode(['informer' => CartInformer::widget(), 'result' => 'success', 'newCost' => $newCost, 'message' => $message]);
+            return json_encode(['code' => Html::encode($promocode), 'informer' => CartInformer::widget(), 'result' => 'success', 'newCost' => $newCost, 'message' => $message]);
         }
         catch(\Exception $e) {
             return json_encode(['informer' => CartInformer::widget(), 'result' => 'fail', 'message' => $e->getMessage()]);

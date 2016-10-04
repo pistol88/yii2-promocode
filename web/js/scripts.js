@@ -55,6 +55,9 @@ pistol88.promocode = {
                     $(form).find('input[type=text]').css({'border': '1px solid red'});
                     console.log(json.errors);
                 }
+				
+				$(document).trigger("promocodeEnter", json.code);
+				
                 $(form).find('.promo-code-discount').show().html(json.message);
 
                 return true;
