@@ -39,7 +39,7 @@ class Promocode extends Component
     {
         $promocode = $this->promocode;
         
-        if(!$promocodeModel = $promocode::findOne(['code' => $promocodeId])) {
+        if(!$promocodeModel = $promocode::findOne(['code' => $promocodeId, 'status' => 1])) {
             throw new \Exception('Промокод не найден');
         }
 
