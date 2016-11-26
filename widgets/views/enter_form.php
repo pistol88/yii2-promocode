@@ -5,8 +5,13 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="promo-code-enter">
-    
-    <?php $form = ActiveForm::begin(['action' => ['/promocode/promo-code-use/enter']]); ?>
+
+    <?php $form = ActiveForm::begin([
+        'action' => ['/promocode/promo-code-use/enter'],
+        'options' => [
+            'data-role' => 'promocode-enter-form',
+        ]
+    ]); ?>
         <?php if(yii::$app->promocode->has()) { ?>
             <p class="promo-code-discount">Ваша скидка: <?=yii::$app->promocode->get()->promocode->discount;?>%</p>
         <?php } else { ?>
@@ -21,6 +26,5 @@ use yii\widgets\ActiveForm;
             </span>
         </div>
     <?php ActiveForm::end(); ?>
-    
-</div>
 
+</div>
