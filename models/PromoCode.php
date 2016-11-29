@@ -5,6 +5,7 @@ use Yii;
 
 class PromoCode extends \yii\db\ActiveRecord
 {
+    
     public static function tableName()
     {
         return '{{%promocode}}';
