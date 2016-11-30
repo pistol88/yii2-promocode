@@ -22,11 +22,10 @@ class DiscountToElement extends Behavior
     {
         if(yii::$app->promocode->has() && $targetModels = yii::$app->promocode->getTargetModels()) {
             $persent = yii::$app->promocode->get()->promocode->discount;
-
             if($persent > 0 && $persent <= 100 && $event->cost > 0) {
                 foreach($targetModels as $target) {
-                    if($target->item_model == $event->element->model && $target->item_id == $event->element->id) {
-                        $event->cost = $event->cost-($event->cost*$persent)/100;
+                    if($target->item_model == $event->element->model  && $target->item_id == $event->element->getModel()->id) {
+                        $event->cost = $event->cost-(($event->cost*$persent)/100);
                     }
                 }
             }
