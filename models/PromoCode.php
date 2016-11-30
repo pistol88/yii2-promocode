@@ -34,4 +34,9 @@ class PromoCode extends \yii\db\ActiveRecord
             'status' => 'Статус',
         ];
     }
+    
+    public function getTargetModels()
+    {
+        return $this->hasMany(PromocodeToItem::className(), ['promocode_id' => 'id']);
+    }
 }

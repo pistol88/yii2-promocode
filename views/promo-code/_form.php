@@ -64,29 +64,27 @@ Asset::register($this);
                     <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success', 'data-role' => 'sendForm']) ?>
                 </div>
             </div>
-            <div class="col-md-6" style="border-left: #0c365a 2px solid; padding-left: 20px;">
+            <div class="col-md-6 promocode-right-column">
                 <div class="row">
                     <div class="col-md-4">
                         <?php foreach($targetModelList as $modelName => $modelType){   ?>
-                            <div class="row">
-                                <?php
-                                Modal::begin([
-                                    'header' => '<h2>Привязать промокод к: '.$modelName.'</h2>',
-                                    'size' => 'modal-lg',
-                                    'toggleButton' => [
-                                        'tag' => 'button',
-                                        'class' => 'btn btn-sm btn-block btn-primary',
-                                        'label' => $modelName,
-                                        'data-model' => $modelType['model'],
-                                    ]
-                                ]);
-                                ?>
-                                <iframe src="/promocode/tools/product-window?targetModel=<?= $modelName ?>" frameborder="0" style="width: 100%">
-                                </iframe>
-                                <?php
-                                Modal::end();
-                                ?>
-                            </div>
+                            <?php
+                            Modal::begin([
+                                'header' => '<h2>Привязать промокод к: '.$modelName.'</h2>',
+                                'size' => 'modal-lg',
+                                'toggleButton' => [
+                                    'tag' => 'button',
+                                    'class' => 'btn btn-sm btn-block btn-primary',
+                                    'label' => $modelName . ' <i class="glyphicon glyphicon-plus"></i>',
+                                    'data-model' => $modelType['model'],
+                                ]
+                            ]);
+                            ?>
+                            <iframe src="/promocode/tools/product-window?targetModel=<?= $modelName ?>" frameborder="0" style="width: 100%; height: 400px;">
+                            </iframe>
+                            <?php
+                            Modal::end();
+                            ?>
                         <?php } ?>
                     </div>
                 </div>

@@ -101,6 +101,15 @@ class Promocode extends Component
         }
     }
     
+    public function getTargetModels()
+    {
+        if($code = $this->get()) {
+            return $code->promocode->targetModels;
+        } else {
+            return false;
+        }
+    }
+    
     public function checkExists($code)
     {
         return PromoCodeModel::findOne(['code' => $code]);

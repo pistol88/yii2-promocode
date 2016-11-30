@@ -5,3 +5,11 @@
 .promo-code-discount {
     color: red;
 }
+
+.promocode-right-column {
+    padding-left: 20px;
+}
+
+.promocode-right-column button {
+    margin: 10px;
+}
