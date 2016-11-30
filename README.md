@@ -2,6 +2,8 @@ Yii2-promocode
 ==========
 Добавление функционала промокодов (купонов) на сайт, работает с [pistol88/cart](http://github.com/pistol88/yii2-cart).
 
+Привязка промокода к модели.
+
 Установка
 ---------------------------------
 Выполнить команду
@@ -28,13 +30,26 @@ php yii migrate --migrationPath=vendor/pistol88/yii2-promocode/migrations
 
 Подключение и настройка
 ---------------------------------
-В конфигурационный файл приложения добавить модуль promocode
+В конфигурационный файл приложения добавить модуль promocode 
+
+В targetModelList указать модели для привязки промокода
 
 ```php
     'modules' => [
         //..
         'promocode' => [
             'class' => 'pistol88\promocode\Module',
+            //Указываем модели, к которым будем привязывать промокод
+            'targetModelList' => [
+                'Категории' => [
+                    'model' => 'pistol88\service\models\Category',
+                    'searchModel' => 'pistol88\service\models\category\CategorySearch'
+                ],
+                'Продукты' => [
+                    'model' => 'pistol88\shop\models\Product',
+                    'searchModel' => 'pistol88\shop\models\product\ProductSearch'
+                ],            
+            ],
         ],
         //..
     ]
