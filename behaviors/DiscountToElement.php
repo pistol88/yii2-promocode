@@ -3,7 +3,6 @@ namespace pistol88\promocode\behaviors;
 
 use yii;
 use yii\base\Behavior;
-use pistol88\cart\Cart;
 
 class DiscountToElement extends Behavior
 {
