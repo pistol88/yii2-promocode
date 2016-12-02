@@ -94,6 +94,15 @@ $persent = yii::$app->promocode->get()->promocode->discount;
     ]
 ```
 
+Чтобы скидка применялась для отдельных моделей необходимо добавить поведение pistol88\promocode\behaviors\DiscountToElement для cart при подключении компонента в конфиге:
+
+```php
+    'cart' => [
+        'class' => 'pistol88\cart\Cart',
+        //'as PromoDiscount' => ['class' => 'pistol88\promocode\behaviors\Discount'],
+        'as ElementDiscount' => ['class' => 'pistol88\promocode\behaviors\DiscountToElement'],
+    ]
+```
 
 Виджеты
 ---------------------------------
