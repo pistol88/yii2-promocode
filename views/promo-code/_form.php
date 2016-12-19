@@ -64,60 +64,64 @@ Asset::register($this);
                     <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success', 'data-role' => 'sendForm']) ?>
                 </div>
             </div>
-            <div class="col-md-6 promocode-right-column">
-                <div class="row">
-                    <div class="col-md-4">
-                        <?php foreach($targetModelList as $modelName => $modelType){   ?>
+            <?php if($targetModelList) { ?>
+                <div class="col-md-6 promocode-right-column">
+                    <h3>Прикрепить только к:</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <?php foreach($targetModelList as $modelName => $modelType){   ?>
+                                <?php
+                                Modal::begin([
+                                    'header' => '<h2>Привязать промокод к: '.$modelName.'</h2>',
+                                    'size' => 'modal-lg',
+                                    'toggleButton' => [
+                                        'tag' => 'button',
+                                        'class' => 'btn btn-sm btn-block btn-primary',
+                                        'label' => $modelName . ' <i class="glyphicon glyphicon-plus"></i>',
+                                        'data-model' => $modelType['model'],
+                                    ]
+                                ]);
+                                ?>
+                                <iframe src="/promocode/tools/product-window?targetModel=<?= $modelName ?>" frameborder="0" style="width: 100%; height: 400px;">
+                                </iframe>
+                                <?php
+                                Modal::end();
+                                ?>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table class="table table-bordered">
+                            <tbody data-role="model-list" id="modelList">
                             <?php
-                            Modal::begin([
-                                'header' => '<h2>Привязать промокод к: '.$modelName.'</h2>',
-                                'size' => 'modal-lg',
-                                'toggleButton' => [
-                                    'tag' => 'button',
-                                    'class' => 'btn btn-sm btn-block btn-primary',
-                                    'label' => $modelName . ' <i class="glyphicon glyphicon-plus"></i>',
-                                    'data-model' => $modelType['model'],
-                                ]
-                            ]);
+                            if ($items) {
+                                foreach ($items as $item) {
+                                    foreach ($item as $item_id => $item_attr) {
+                                        ?>
+                                        <tr data-role="item">
+                                            <td><label>
+                                                    <?=$item_attr['name']?>   
+                                                </label>
+                                                <input type="hidden" data-role="product-model" name="targetModels<?=$item_id?>"
+                                                       data-name="<?= str_replace(['[',']','\\'],"",$item_id)?>"/>
+                                            </td>
+                                            <td>
+                                                <span data-href="ajax-delete-target-item" class="btn glyphicon glyphicon-remove" style="color: red;"        data-role="remove-target-item"
+                                                      data-target-model="<?=$item_attr['model'] ?>"
+                                                      data-target-model-id="<?=$item_attr['model_id'] ?>"></span>
+                                            </td>
+
+                                        </tr>
+                                    <?php    }
+                                }
+                            }
                             ?>
-                            <iframe src="/promocode/tools/product-window?targetModel=<?= $modelName ?>" frameborder="0" style="width: 100%; height: 400px;">
-                            </iframe>
-                            <?php
-                            Modal::end();
-                            ?>
-                        <?php } ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="row">
-                    <table class="table table-bordered">
-                        <tbody data-role="model-list" id="modelList">
-                        <?php
-                        if ($items) {
-                            foreach ($items as $item) {
-                                foreach ($item as $item_id => $item_attr) {
-                                    ?>
-                                    <tr data-role="item">
-                                        <td><label>
-                                                <?=$item_attr['name']?>   
-                                            </label>
-                                            <input type="hidden" data-role="product-model" name="targetModels<?=$item_id?>"
-                                                   data-name="<?= str_replace(['[',']','\\'],"",$item_id)?>"/>
-                                        </td>
-                                        <td>
-                                            <span data-href="ajax-delete-target-item" class="btn glyphicon glyphicon-remove" style="color: red;"        data-role="remove-target-item"
-                                                  data-target-model="<?=$item_attr['model'] ?>"
-                                                  data-target-model-id="<?=$item_attr['model_id'] ?>"></span>
-                                        </td>
+            <?php } ?>
 
-                                    </tr>
-                                <?php    }
-                            }
-                        }
-                        ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
             <?php ActiveForm::end(); ?>
         </div>
     </div>
