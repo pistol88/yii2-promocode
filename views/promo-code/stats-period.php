@@ -9,10 +9,10 @@ $this->params['breadcrumbs'][] = 'Статистика по промокодам
 <div class="promo-codes-stats">
     <div class="row session-finder">
         <div class="col-md-6">
-            <form action="" method="get">
+            <form class="form form-inline" action="" method="get">
                 <p>Выберите период:</p>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-4 form-group">
                         <?= DatePicker::widget([
                             'name' => 'dateStart',
                             'addon' => false,
@@ -21,6 +21,7 @@ $this->params['breadcrumbs'][] = 'Статистика по промокодам
                             'language' => 'ru',
                             'options' => [
                                 'onchange' => '',
+
                             ],
                             'placeholder' => 'На дату...',
                             'clientOptions' => [
@@ -35,7 +36,7 @@ $this->params['breadcrumbs'][] = 'Статистика по промокодам
                             ],
                         ]);?>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 form-group">
                         <?= DatePicker::widget([
                             'name' => 'dateStop',
                             'addon' => false,
@@ -44,6 +45,7 @@ $this->params['breadcrumbs'][] = 'Статистика по промокодам
                             'language' => 'ru',
                             'options' => [
                                 'onchange' => '',
+                                'class' => 'form-control',
                             ],
                             'placeholder' => 'На дату...',
                             'clientOptions' => [
@@ -58,20 +60,21 @@ $this->params['breadcrumbs'][] = 'Статистика по промокодам
                             ],
                         ]);?>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 form-group">
                         <input type="submit" value="Применить" class="btn btn-submit" />
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    <br style="clear: both;" />
     <div class="row well">
-        <h1>Статистика промокодов за период:
+        <h3>Статистика промокодов за период:
             <?=date('d.m.Y', strtotime($dateStart));?> - <?=date('d.m.Y', strtotime($dateStop));?>
-        </h1>
+        </h3>
     </div>
     <div class="row">
-        <table class="table table-bordered table-hover table-responsive">
+        <table class="table table-bordered table-hovered table-responsive">
             <tbody>
             <tr>
                 <th>Название</th>
