@@ -16,6 +16,7 @@ $this->params['breadcrumbs'][] = 'Изменить';
         'model' => $model,
         'targetModelList' => $targetModelList,
         'items' => $items,
+        'usesModelMap' => $usesModelMap,
     ]) ?>
 
 </div>

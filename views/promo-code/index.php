@@ -15,6 +15,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Добавить промокод', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+    <?php if (isset(yii::$app->getModule('promocode')->orderModel)) { ?>
+    <p>
+        <?= Html::a('Статистика по промокодам', ['statistic'], ['class' => 'btn btn-primary']) ?>
+    </p>
+    <?php } ?>  
     <div class="box">
         <div class="box-body">
             <?= GridView::widget([

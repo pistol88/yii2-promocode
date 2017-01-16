@@ -63,10 +63,15 @@ class PromoCodeController extends Controller
         if ($this->module->targetModelList) {
             $targetModelList = $this->module->targetModelList;
         }
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+
+            $model->date_elapsed = date('Y-m-d H:i:s',strtotime($model->date_elapsed));
+
+            $model->save();
+
             $targets = Yii::$app->request->post();
-            if ($targets[targetModels] !== null) {
-                $this->savePromocodeToModel($targets[targetModels],$model->id);
+            if (isset($targets['targetModels']) && $targets['targetModels'] != null) {
+                $this->savePromocodeToModel($targets['targetModels'],$model->id);
             }
             if($backUrl = yii::$app->request->post('backUrl')) {
                 return $this->redirect($backUrl);
@@ -104,6 +109,9 @@ class PromoCodeController extends Controller
         $promoCodeItems = PromocodeToItem::find()->where(['promocode_id' => $id])->all();
         $targetModelList = [];
         $items = [];
+        $usesModel = yii::$app->getModule('promocode')->usesModel;
+        $usesModelMap = ArrayHelper::map($usesModel::find()->all(),'id','username');
+        
 
 
         foreach ($promoCodeItems as $promoCodeItem) {
@@ -121,12 +129,15 @@ class PromoCodeController extends Controller
         if ($this->module->targetModelList) {
             $targetModelList = $this->module->targetModelList;
         }
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
+        if ($model->load(Yii::$app->request->post())) {
 
             $targets = Yii::$app->request->post();
+            $model->date_elapsed = date('Y-m-d H:i:s',strtotime($model->date_elapsed));
+            $model->save();
 
-            $this->savePromocodeToModel($targets[targetModels],$model->id,$promoCodeItems);
+            if (isset($targets['targetModels']) && $targets['targetModels'] != null) {
+                $this->savePromocodeToModel($targets['targetModels'],$model->id);
+            }
 
             if($backUrl = yii::$app->request->post('backUrl')) {
                 return $this->redirect($backUrl);
@@ -138,7 +149,7 @@ class PromoCodeController extends Controller
                 'model' => $model,
                 'targetModelList' => $targetModelList,
                 'items' => $items,
-
+                'usesModelMap' => $usesModelMap,
             ]);
         }
     }
@@ -180,6 +191,73 @@ class PromoCodeController extends Controller
                 } //model instance foreach
             } //model namespace foreach
         } //savePromocodeToModel
+    }
+
+    public function actionStatistic()
+    {
+
+        $orderModel = yii::$app->getModule('promocode')->orderModel;
+        $orders = $orderModel::find();
+        $ordersCount = $orders->count();
+
+        $timeFrom01 = mktime(0, 0, 0, date("m")  , 1        ,   date("Y"));
+        $timeLast30 = mktime(0, 0, 0, date("m")-1, date("d"),   date("Y"));
+        $timeLast90 = mktime(0, 0, 0, date("m")-3, date("d"),   date("Y"));
+
+        $data = [];
+        $promoCodes = [];
+
+        foreach ($orders->groupBy('promocode')->all() as $key => $value) {
+            array_push($promoCodes,$value->promocode);
+        }
+
+        $orders = $orderModel::find();
+
+        foreach ($promoCodes as $key => $promocode) {
+
+            $name = $promocode ? $promocode : "Без промокода";
+            $promocodeOrders = $orders->where(["promocode"=>$promocode]);
+
+            $poClone = clone $promocodeOrders;
+
+            $allTime = $poClone->count();
+
+            $time = date('Y-m-d H:i:s',$timeFrom01);
+            $poClone = clone $promocodeOrders;
+            $thisMonth = $poClone->andWhere("date > '$time'")->count();
+
+            $time = date('Y-m-d H:i:s',$timeLast30);
+            $poClone = clone $promocodeOrders;
+            $lastMonth = $poClone->andWhere("date > '$time'")->count();
+
+            $poClone = clone $promocodeOrders;
+            $avgSum = round($poClone->sum('cost') / ($allTime ? $allTime : 1),2);
+
+//            $time = date('Y-m-d H:i:s',$timeLast90);
+            $ordersClone = clone $orders;
+            $percent = round(
+                $ordersClone->where(["promocode"=>$promocode])
+//                    ->andWhere("date > '$time'")
+                    ->count()/$ordersCount * 100,2);
+
+            $data[] = [
+                'name' => $name,
+                'thisMonth' => $thisMonth,
+                'lastMonth' => $lastMonth,
+                'allTime' => $allTime,
+                'avgSum' => $avgSum,
+                'percent' => $percent
+            ];
+        }
+
+        return $this->render('stats',[
+            'promocodes'=>$data
+        ]);
+    }
+    
+    public function actionPeriodStatistic()
+    {
+        
     }
 
 

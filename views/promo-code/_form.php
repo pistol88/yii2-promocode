@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\bootstrap\Modal;
+use kartik\date\DatePicker;
+use yii\helpers\Url;
 use pistol88\promocode\assets\Asset;
 Asset::register($this);
 
@@ -42,9 +44,11 @@ Asset::register($this);
                         }
                         if($model->isNewRecord) {
                             $code = KeyPromoGen();
+                            $date = '';
                             $params = ['value' => $code];
                         } else {
                             $params = [];
+                            $date = date('d.m.Y',strtotime($model->date_elapsed));
                         }
 
                         echo $form->field($model, 'code')->textInput($params) ?>
@@ -57,6 +61,26 @@ Asset::register($this);
                             '1' => 'Активен',
                             '0' => 'Отключен',
                         ]);
+                        ?>
+                    </div>
+                    <div class="col-md-6">
+                        <?= $form->field($model, 'date_elapsed')->widget(DatePicker::classname(), [
+                            'language' => 'ru',
+                            'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                            'options' => [
+                                'placeholder' => 'Дата истечения промокода',
+                                'value' =>  $date,
+                            ],
+                            'removeButton' => false,
+                            'pluginOptions' => [
+                                'autoclose'=>true,
+                                'format' => 'd.m.yyyy',
+                            ],
+                        ])->label('Дата истечения промокода')->hint('Выберите дату истечения срока действия промокода')
+                        ?>
+                    </div>
+                    <div class="col-md-6">
+                        <?= $form->field($model, 'amount')->label('Количество использований')->hint('Здесь задается количество использований промокода')
                         ?>
                     </div>
                 </div>
@@ -123,6 +147,34 @@ Asset::register($this);
             <?php } ?>
 
             <?php ActiveForm::end(); ?>
+        </div>
+        <div>
+            <?php if ($model->getTransactions()->all()) { ?>
+                <input type="button" class="btn btn-primary" data-toggle="collapse" data-target="#toggleHistory" value="История использований">
+                <br>
+                <div id="toggleHistory" class="collapse">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Дата использования</th>
+                                <th>Номер заказа</th>
+                                <th>Кем использован</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach($model->getTransactions()->orderBy(['date' => SORT_DESC])->all() as $promoCodeUse) {?>
+                                <tr>
+                                    <td><?= date('d.m.Y H:i:s',strtotime($promoCodeUse->date)) ?></td>
+                                    <td><a href="<?=Url::to(['/order/order/view', 'id' => $promoCodeUse->order_id]) ?>"><?= $promoCodeUse->order_id ?></a></td>
+                                    <td><?= ($promoCodeUse->user) ? $usesModelMap[$promoCodeUse->user] : '' ?></td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <?php } ?>
         </div>
     </div>
 </div>
