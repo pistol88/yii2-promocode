@@ -268,11 +268,11 @@ class PromoCodeController extends Controller
         if(!$dateStop) {
             $dateStop = date('Y-m-d H:i:s');
         } else {
-            $dateStop = date('Y-m-d H:i:s', strtotime($dateStop));
+            $dateStop = date('Y-m-d H:i:s', strtotime($dateStop."+23 hours 59 minutes + 59 seconds"));
         }
 
         $orderModel = yii::$app->getModule('promocode')->orderModel;
-        $orders = $orderModel::find();
+        $orders = $orderModel::find()->andWhere("date >= '$dateStart'")->andWhere("date <= '$dateStop'");
         $ordersCount = $orders->count();
 
         $data = [];
@@ -282,19 +282,23 @@ class PromoCodeController extends Controller
             array_push($promoCodes,$value->promocode);
         }
 
-        $orders = $orderModel::find()->andWhere("date >= '$dateStart'")->andWhere("date <= '$dateStop'");;
+        $orders = $orderModel::find()
+            ->andWhere("date >= '$dateStart'")
+            ->andWhere("date <= '$dateStop'");
 
         foreach ($promoCodes as $key => $promocode) {
 
             $name = $promocode ? $promocode : "Без промокода";
-            $promocodeOrders = $orders->where(["promocode"=>$promocode])->andWhere("date > '$dateStart'")->andWhere("date < '$dateStop'");
+            $promocodeOrders = $orders->where(["promocode"=>$promocode])
+                ->andWhere("date >= '$dateStart'")
+                ->andWhere("date <= '$dateStop'");
 
             $poClone = clone $promocodeOrders;
 
             $allTime = $poClone->count();
 
             $poClone = clone $promocodeOrders;
-            $statsPeriod = $poClone->andWhere("date > '$dateStart'")->andWhere("date < '$dateStop'")->count();
+            $statsPeriod = $poClone->andWhere("date >= '$dateStart'")->andWhere("date <= '$dateStop'")->count();
 
             $poClone = clone $promocodeOrders;
             $avgSum = round($poClone->sum('cost') / ($allTime ? $allTime : 1),2);
@@ -302,8 +306,8 @@ class PromoCodeController extends Controller
             $ordersClone = clone $orders;
             $percent = round(
                 $ordersClone->where(["promocode"=>$promocode])
-                    ->andWhere("date > '$dateStart'")
-                    ->andWhere("date < '$dateStop'")
+                    ->andWhere("date >= '$dateStart'")
+                    ->andWhere("date <= '$dateStop'")
                     ->count()/$ordersCount * 100,2);
 
             $data[] = [
