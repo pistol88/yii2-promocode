@@ -16,9 +16,14 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Добавить промокод', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?php if (isset(yii::$app->getModule('promocode')->orderModel)) { ?>
-    <p>
-        <?= Html::a('Статистика по промокодам', ['statistic'], ['class' => 'btn btn-primary']) ?>
-    </p>
+        <div class="well pull-right">
+            <p>
+                <?= Html::a('Статистика по промокодам', ['statistic'], ['class' => 'btn btn-primary btn-block']) ?>
+            </p>
+            <p>
+                <?= Html::a('Статистика за период', ['period-statistic'], ['class' => 'btn btn-primary btn-block']) ?>
+            </p>
+        </div>
     <?php } ?>  
     <div class="box">
         <div class="box-body">

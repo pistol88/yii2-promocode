@@ -44,7 +44,7 @@ Asset::register($this);
                         }
                         if($model->isNewRecord) {
                             $code = KeyPromoGen();
-                            $date = '';
+                            $date = date('d.m.Y');
                             $params = ['value' => $code];
                         } else {
                             $params = [];

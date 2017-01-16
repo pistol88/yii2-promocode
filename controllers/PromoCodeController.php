@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
 
 class PromoCodeController extends Controller
 {
@@ -255,9 +256,69 @@ class PromoCodeController extends Controller
         ]);
     }
     
-    public function actionPeriodStatistic()
+    public function actionPeriodStatistic($dateStart = null, $dateStop = null)
     {
-        
+
+        if(!$dateStart) {
+            $dateStart = date('Y-m-d H:i:s', (time()-(86400*30)));
+        } else {
+            $dateStart = date('Y-m-d H:i:s', strtotime($dateStart));
+        }
+
+        if(!$dateStop) {
+            $dateStop = date('Y-m-d H:i:s');
+        } else {
+            $dateStop = date('Y-m-d H:i:s', strtotime($dateStop));
+        }
+
+        $orderModel = yii::$app->getModule('promocode')->orderModel;
+        $orders = $orderModel::find();
+        $ordersCount = $orders->count();
+
+        $data = [];
+        $promoCodes = [];
+
+        foreach ($orders->groupBy('promocode')->all() as $key => $value) {
+            array_push($promoCodes,$value->promocode);
+        }
+
+        $orders = $orderModel::find()->andWhere("date >= '$dateStart'")->andWhere("date <= '$dateStop'");;
+
+        foreach ($promoCodes as $key => $promocode) {
+
+            $name = $promocode ? $promocode : "Без промокода";
+            $promocodeOrders = $orders->where(["promocode"=>$promocode])->andWhere("date > '$dateStart'")->andWhere("date < '$dateStop'");
+
+            $poClone = clone $promocodeOrders;
+
+            $allTime = $poClone->count();
+
+            $poClone = clone $promocodeOrders;
+            $statsPeriod = $poClone->andWhere("date > '$dateStart'")->andWhere("date < '$dateStop'")->count();
+
+            $poClone = clone $promocodeOrders;
+            $avgSum = round($poClone->sum('cost') / ($allTime ? $allTime : 1),2);
+
+            $ordersClone = clone $orders;
+            $percent = round(
+                $ordersClone->where(["promocode"=>$promocode])
+                    ->andWhere("date > '$dateStart'")
+                    ->andWhere("date < '$dateStop'")
+                    ->count()/$ordersCount * 100,2);
+
+            $data[] = [
+                'name' => $name,
+                'avgSum' => $avgSum,
+                'stats' => $statsPeriod,
+                'percent' => $percent
+            ];
+        }
+
+        return $this->render('stats-period',[
+            'promocodes'=>$data,
+            'dateStart' => Html::encode($dateStart),
+            'dateStop' => Html::encode($dateStop),
+        ]);
     }
 
 
