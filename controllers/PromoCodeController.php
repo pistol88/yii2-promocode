@@ -65,8 +65,11 @@ class PromoCodeController extends Controller
             $targetModelList = $this->module->targetModelList;
         }
         if ($model->load(Yii::$app->request->post())) {
-
-            $model->date_elapsed = date('Y-m-d H:i:s',strtotime($model->date_elapsed));
+            if  ($model->date_elapsed){
+                $model->date_elapsed = date('Y-m-d H:i:s',strtotime($model->date_elapsed));  
+            } else {
+                $model->date_elapsed = null;
+            }
 
             $model->save();
 
@@ -133,7 +136,10 @@ class PromoCodeController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $targets = Yii::$app->request->post();
-            $model->date_elapsed = date('Y-m-d H:i:s',strtotime($model->date_elapsed));
+            if ($model->date_elapsed) {
+                $model->date_elapsed = date('Y-m-d H:i:s',strtotime($model->date_elapsed));
+            }
+
             $model->save();
 
             if (isset($targets['targetModels']) && $targets['targetModels'] != null) {
@@ -203,7 +209,6 @@ class PromoCodeController extends Controller
 
         $timeFrom01 = mktime(0, 0, 0, date("m")  , 1        ,   date("Y"));
         $timeLast30 = mktime(0, 0, 0, date("m")-1, date("d"),   date("Y"));
-        $timeLast90 = mktime(0, 0, 0, date("m")-3, date("d"),   date("Y"));
 
         $data = [];
         $promoCodes = [];
@@ -234,11 +239,9 @@ class PromoCodeController extends Controller
             $poClone = clone $promocodeOrders;
             $avgSum = round($poClone->sum('cost') / ($allTime ? $allTime : 1),2);
 
-//            $time = date('Y-m-d H:i:s',$timeLast90);
             $ordersClone = clone $orders;
             $percent = round(
                 $ordersClone->where(["promocode"=>$promocode])
-//                    ->andWhere("date > '$time'")
                     ->count()/$ordersCount * 100,2);
 
             $data[] = [

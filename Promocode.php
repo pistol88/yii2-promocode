@@ -48,7 +48,7 @@ class Promocode extends Component
             throw new \Exception('Промокод не действителен');
         }
 
-        if ($this->checkPromoCodeStatus($promocodeId)) {
+        if (!$this->checkPromoCodeStatus($promocodeId)) {
             throw new \Exception('Промокод не действителен');
         }
 
@@ -137,11 +137,15 @@ class Promocode extends Component
 
         $promoCode = $this->checkExists($code);
 
+        if (empty($promoCode->date_elapsed)) {
+            return true;
+        }
+
         if (strtotime($promoCode->date_elapsed) < strtotime(date('Y:m:d H:m:s'))) {
             $this->setPromoCodeStatus($promoCode,0);
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         }
     }
 

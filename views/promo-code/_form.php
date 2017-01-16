@@ -44,13 +44,16 @@ Asset::register($this);
                         }
                         if($model->isNewRecord) {
                             $code = KeyPromoGen();
-                            $date = date('d.m.Y');
+                            $date = '';
                             $params = ['value' => $code];
                         } else {
                             $params = [];
-                            $date = date('d.m.Y',strtotime($model->date_elapsed));
+                            if ($model->date_elapsed) {
+                                $date = date('d.m.Y',strtotime($model->date_elapsed));
+                            } else {
+                                $date = '';
+                            }
                         }
-
                         echo $form->field($model, 'code')->textInput($params) ?>
                     </div>
                     <div class="col-md-4">
@@ -69,7 +72,7 @@ Asset::register($this);
                             'type' => DatePicker::TYPE_COMPONENT_PREPEND,
                             'options' => [
                                 'placeholder' => 'Дата истечения промокода',
-                                'value' =>  $date,
+                                'value' => $date
                             ],
                             'removeButton' => false,
                             'pluginOptions' => [
