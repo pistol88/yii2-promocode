@@ -21,10 +21,20 @@ class Discount extends Behavior
     public function doDiscount($event)
     {
         if(yii::$app->promocode->has()) {
-            $persent = yii::$app->promocode->get()->promocode->discount;
-
-            if($persent > 0 && $persent <= 100 && $event->cost > 0) {
-                $event->cost = $event->cost-($event->cost*$persent)/100;
+            $discount = yii::$app->promocode->get()->promocode->discount;
+            
+            if (yii::$app->promocode->get()->promocode->type == 'percent') {
+                if($discount > 0 && $discount <= 100 && $event->cost > 0) {
+                    $event->cost = $event->cost-($event->cost*$discount)/100;
+                }                
+            } else {
+                if($discount > 0 && $event->cost > 0) {
+                    if  ($event->cost < $discount) {
+                        $event->cost = $event->cost-($event->cost*100)/100;
+                    } else {
+                        $event->cost = $event->cost-$discount;
+                    }
+                }
             }
         }
 

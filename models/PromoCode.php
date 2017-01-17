@@ -15,8 +15,8 @@ class PromoCode extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'code', 'discount', 'status'], 'required'],
-            [['description'], 'string'],
+            [['title', 'code', 'discount', 'status','type'], 'required'],
+            [['description','type'], 'string'],
             [['discount', 'status','amount'], 'integer'],
             [['date_elapsed'], 'safe'],
             [['title'], 'string', 'max' => 256],
@@ -32,7 +32,8 @@ class PromoCode extends \yii\db\ActiveRecord
             'title' => 'Название кода(акции)',
             'description' => 'Описание',
             'code' => 'Код',
-            'discount' => '% скидки',
+            'type' => 'Тип скидки промокода',
+            'discount' => 'Значение скидки',
             'status' => 'Статус',
             'date_elapsed' => 'Срок истечения',
             'amount' => 'Количество использований'

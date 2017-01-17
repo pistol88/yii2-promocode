@@ -13,7 +13,14 @@ use yii\widgets\ActiveForm;
         ]
     ]); ?>
         <?php if(yii::$app->promocode->has()) { ?>
-            <p class="promo-code-discount">Ваша скидка: <?=yii::$app->promocode->get()->promocode->discount;?>%</p>
+            <p class="promo-code-discount">
+                Ваша скидка: <?=yii::$app->promocode->get()->promocode->discount;?>
+                <?php if (yii::$app->promocode->get()->promocode->type == 'percent') {
+                    echo '%';
+                } else {
+                    echo ' рублей';
+                } ?>
+            </p>
         <?php } else { ?>
             <p class="promo-code-discount" style="display: none;"></p>
         <?php } ?>

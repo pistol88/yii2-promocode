@@ -8,10 +8,6 @@ use yii\helpers\Url;
 use pistol88\promocode\assets\Asset;
 Asset::register($this);
 
-
-/* @var $this yii\web\View */
-/* @var $model common\models\PromoCodes */
-/* @var $form yii\widgets\ActiveForm */
 ?>
 
 <div class="promo-codes-form">
@@ -56,8 +52,22 @@ Asset::register($this);
                         }
                         echo $form->field($model, 'code')->textInput($params) ?>
                     </div>
-                    <div class="col-md-4">
-                        <?= $form->field($model, 'discount')->textInput() ?>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <?= $form->field($model, 'type')->dropDownList([
+                                    'percent' => 'Процент скидки',
+                                    'quantum' => 'Сумма скидки',
+                                ],
+                                    [
+                                        'prompt' => 'Выберите тип скидки промокода:'
+                                    ])->hint('Выберите тип предоставляемой промокодом скидки')->label('Тип скидки промокода')
+                                ?>
+                            </div>
+                            <div class="col-md-4">
+                                <?= $form->field($model, 'discount')->textInput()->hint('Задайте процент или сумму') ?>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <?= $form->field($model, 'status')->dropDownList([

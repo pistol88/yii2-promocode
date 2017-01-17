@@ -27,12 +27,17 @@ class PromoCodeUseController extends Controller
             
             if(yii::$app->request->post('clear')) {
                 yii::$app->promocode->clear();
-                $persent = false;
+                $discount = false;
                 $message = 'Промокод удален!';
             } else {
                 yii::$app->promocode->enter($promocode);
-                $persent = yii::$app->promocode->get()->promocode->discount;
-                $message = 'Промокод применен, скидка '.$persent.'%';
+                $discount = yii::$app->promocode->get()->promocode->discount;
+                $message = 'Промокод применен, скидка '.$discount;
+                if (yii::$app->promocode->get()->promocode->type == 'percent') {
+                    $message .= '%';
+                } else {
+                    $message .= ' рублей';
+                }
             }
             
             if(yii::$app->cart) {
