@@ -151,6 +151,10 @@ class Promocode extends Component
 
     public function setPromoCodeAmount($promoCode)
     {
+        if ($promoCode->amount == null) {
+            return true;
+        }
+
         if ($promoCode->amount > 0) {
             $promoCode->amount = $promoCode->amount-1;
         }
