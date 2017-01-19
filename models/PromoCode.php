@@ -15,7 +15,7 @@ class PromoCode extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'code', 'discount', 'status','type'], 'required'],
+            [['title', 'code', 'discount', 'status'], 'required'],
             [['description','type'], 'string'],
             [['discount', 'status','amount'], 'integer'],
             [['date_elapsed'], 'safe'],
