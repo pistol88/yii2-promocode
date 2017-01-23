@@ -23,7 +23,7 @@ class Discount extends Behavior
         if(yii::$app->promocode->has()) {
             $discount = yii::$app->promocode->get()->promocode->discount;
             
-            if (yii::$app->promocode->get()->promocode->type == 'percent') {
+            if (yii::$app->promocode->get()->promocode->type == 'percent' || yii::$app->promocode->get()->promocode->type == 'cumulative' || empty(yii::$app->promocode->get()->promocode->type)) {
                 if($discount > 0 && $discount <= 100 && $event->cost > 0) {
                     $event->cost = $event->cost-($event->cost*$discount)/100;
                 }                
