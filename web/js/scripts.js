@@ -10,6 +10,7 @@ pistol88.promocode = {
         
         return true;
     },
+
     clear: function() {
         var form = $(this).parents('form');
         var data = $(form).serialize();

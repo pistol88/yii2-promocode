@@ -27,7 +27,7 @@ Asset::register($this);
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <?php
                         function KeyPromoGen(){
                             $key = md5(time());
@@ -52,24 +52,7 @@ Asset::register($this);
                         }
                         echo $form->field($model, 'code')->textInput($params) ?>
                     </div>
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <?= $form->field($model, 'type')->dropDownList([
-                                    'percent' => 'Процент скидки',
-                                    'quantum' => 'Сумма скидки',
-                                ],
-                                    [
-                                        'prompt' => 'Выберите тип скидки промокода:'
-                                    ])->hint('Выберите тип предоставляемой промокодом скидки')->label('Тип скидки промокода')
-                                ?>
-                            </div>
-                            <div class="col-md-4">
-                                <?= $form->field($model, 'discount')->textInput()->hint('Задайте процент или сумму') ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <?= $form->field($model, 'status')->dropDownList([
                             '1' => 'Активен',
                             '0' => 'Отключен',
@@ -77,12 +60,71 @@ Asset::register($this);
                         ?>
                     </div>
                     <div class="col-md-6">
+                        <?= $form->field($model, 'type')->dropDownList([
+                            'percent' => 'Процент скидки',
+                            'quantum' => 'Сумма скидки',
+                            'cumulative' => 'Накопительная скидка'
+                        ],
+                            [
+                                'prompt' => 'Выберите тип скидки промокода:',
+                                'class' => 'form-control promo-code-discount-type',
+                            ])->hint('Выберите тип предоставляемой промокодом скидки')->label('Тип скидки промокода')
+                        ?>
+                    </div>
+                    <div class="col-md-6">
+                        <?= $form->field($model, 'discount')->textInput()->hint('Задайте процент или сумму') ?>
+                    </div>
+                </div>
+                <div class="col-md-12 promocode-cumulative-form form-group <?= (empty($conditions)) ? 'hidden' : '' ?>">
+                    <div class="row text-center">
+                        <?php if ($model->getTransactions()->all()) { ?>
+                            <div class="col-md-6 alert alert-info">
+                                <i>Сумма покупок: <b><?php if (!$model->isNewRecord) { echo (yii::$app->promocode->getPromoCodeUsedSum($model->id)) ? yii::$app->promocode->getPromoCodeUsedSum($model->id) : '0'; }?></b> р.</i>
+                                <br>
+                                <i>Скидка составляет <b><?php if (!$model->isNewRecord) { echo (yii::$app->promocode->checkPromoCodeDiscount($model->id)); }?>%</b></i>
+                            </div>
+                        <?php } ?>
+                        <div class="form form-inline cumulative-block">
+                            <?php if (isset($conditions) && $model->type === 'cumulative') { ?>
+                                <?php foreach ($conditions as $condition) { ?>
+                                    <div class="cumulative-row form-group">
+                                        <input class="form-control" name="Conditions[<?= $condition['id']?>][sumStart]" type="text" value="<?= $condition['sum_start'] ?>" placeholder="От"> -
+                                        <input class="form-control" name="Conditions[<?= $condition['id']?>][sumStop]" type="text" value="<?= $condition['sum_stop'] ?>" placeholder="До">
+                                        <input class="form-control" name="Conditions[<?= $condition['id']?>][percent]" type="text" style="width: 50px" value="<?= $condition['value'] ?>" placeholder="%">
+                                        <span class="btn glyphicon glyphicon-remove remove-condition-btn" style="color: red;"
+                                              data-role="remove-row"
+                                              data-href="ajax-delete-condition"
+                                              data-condition="<?= $condition['id']?>">
+                                        </span>
+                                    </div>
+                                <?php }
+                            } else { ?>
+                                <div class="cumulative-row form-group">
+                                    <input class="form-control" name="Conditions[C0][sumStart]" type="text"placeholder="От"> -
+                                    <input class="form-control" name="Conditions[C0][sumStop]" type="text"placeholder="До">
+                                    <input class="form-control" name="Conditions[C0][percent]" type="text" style="width: 50px"placeholder="%">
+                                        <span class="btn glyphicon glyphicon-remove remove-condition-btn" style="color: red;"
+                                              data-role="remove-row">
+                                        </span>
+                                </div>
+                            <?php } ?>
+                        </div>
+                        <br>
+                        <div class="cl-md-2 col-md-offset-10">
+                            <button class="btn btn-primary add-cumulative-row">
+                                <span class="qlyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
                         <?= $form->field($model, 'date_elapsed')->widget(DatePicker::classname(), [
                             'language' => 'ru',
                             'type' => DatePicker::TYPE_COMPONENT_PREPEND,
                             'options' => [
                                 'placeholder' => 'Дата истечения промокода',
-                                'value' => $date
+                                'value' => $date,
                             ],
                             'removeButton' => false,
                             'pluginOptions' => [
@@ -93,7 +135,7 @@ Asset::register($this);
                         ?>
                     </div>
                     <div class="col-md-6">
-                        <?= $form->field($model, 'amount')->label('Количество использований')->hint('Здесь задается количество использований промокода')
+                        <?= $form->field($model, 'amount')->textInput()->label('Количество использований')->hint('Здесь задается количество использований промокода')
                         ?>
                     </div>
                 </div>
@@ -101,8 +143,8 @@ Asset::register($this);
                     <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success', 'data-role' => 'sendForm']) ?>
                 </div>
             </div>
-            <?php if($targetModelList) { ?>
                 <div class="col-md-6 promocode-right-column">
+                    <?php if($targetModelList) { ?>
                     <h3>Прикрепить только к:</h3>
                     <div class="row">
                         <div class="col-md-4">
@@ -131,7 +173,7 @@ Asset::register($this);
                         <table class="table table-bordered">
                             <tbody data-role="model-list" id="modelList">
                             <?php
-                            if ($items) {
+                            if (isset($items)) {
                                 foreach ($items as $item) {
                                     foreach ($item as $item_id => $item_attr) {
                                         ?>
@@ -143,7 +185,8 @@ Asset::register($this);
                                                        data-name="<?= str_replace(['[',']','\\'],"",$item_id)?>"/>
                                             </td>
                                             <td>
-                                                <span data-href="ajax-delete-target-item" class="btn glyphicon glyphicon-remove" style="color: red;"        data-role="remove-target-item"
+                                                <span data-href="ajax-delete-target-item" class="btn glyphicon glyphicon-remove" style="color: red;"
+                                                      data-role="remove-target-item"
                                                       data-target-model="<?=$item_attr['model'] ?>"
                                                       data-target-model-id="<?=$item_attr['model_id'] ?>"></span>
                                             </td>
@@ -156,38 +199,37 @@ Asset::register($this);
                             </tbody>
                         </table>
                     </div>
-                </div>
-            <?php } ?>
-
-            <?php ActiveForm::end(); ?>
-        </div>
-        <div>
-            <?php if ($model->getTransactions()->all()) { ?>
-                <input type="button" class="btn btn-primary" data-toggle="collapse" data-target="#toggleHistory" value="История использований">
-                <br>
-                <div id="toggleHistory" class="collapse">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                            <tr>
-                                <th>Дата использования</th>
-                                <th>Номер заказа</th>
-                                <th>Кем использован</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?php foreach($model->getTransactions()->orderBy(['date' => SORT_DESC])->all() as $promoCodeUse) {?>
-                                <tr>
-                                    <td><?= date('d.m.Y H:i:s',strtotime($promoCodeUse->date)) ?></td>
-                                    <td><a href="<?=Url::to(['/order/order/view', 'id' => $promoCodeUse->order_id]) ?>"><?= $promoCodeUse->order_id ?></a></td>
-                                    <td><?= ($promoCodeUse->user) ? $usesModelMap[$promoCodeUse->user] : '' ?></td>
-                                </tr>
-                            <?php } ?>
-                            </tbody>
-                        </table>
+                    <?php } ?>
+                    <div>
+                        <?php if ($model->getTransactions()->all()) { ?>
+                            <h3>История использований</h3>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>Дата использования</th>
+                                            <th>Номер заказа</th>
+                                            <th>Сумма</th>
+                                            <th>Кем использован</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php foreach($model->getTransactions()->orderBy(['date' => SORT_DESC])->all() as $promoCodeUse) {?>
+                                            <tr>
+                                                <td><?= date('d.m.Y H:i:s',strtotime($promoCodeUse->date)) ?></td>
+                                                <td><a href="<?=Url::to(['/order/order/view', 'id' => $promoCodeUse->order_id]) ?>"><?= $promoCodeUse->order_id ?></a></td>
+                                                <td><i><b><?= $promoCodeUse->sum ?> р.</b></i></td>
+                                                <td><?= ($promoCodeUse->user) ? $usesModelMap[$promoCodeUse->user] : '' ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                        <?php } ?>
                     </div>
                 </div>
-            <?php } ?>
+
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>

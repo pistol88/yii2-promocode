@@ -15,7 +15,7 @@ class PromoCode extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'code', 'discount', 'status','type'], 'required'],
+            [['title', 'code', 'discount', 'status'], 'required'],
             [['description','type'], 'string'],
             [['discount', 'status','amount'], 'integer'],
             [['date_elapsed'], 'safe'],
@@ -36,7 +36,7 @@ class PromoCode extends \yii\db\ActiveRecord
             'discount' => 'Значение скидки',
             'status' => 'Статус',
             'date_elapsed' => 'Срок истечения',
-            'amount' => 'Количество использований'
+            'amount' => 'Количество использований',
         ];
     }
     
@@ -48,5 +48,10 @@ class PromoCode extends \yii\db\ActiveRecord
     public function getTransactions()
     {
         return $this->hasMany(PromoCodeUsed::className(),['promocode_id' => 'id']);
+    }
+
+    public function getConditions()
+    {
+        return $this->hasMany(PromoCodeToCondition::className(),['promocode_id' => 'id']);
     }
 }

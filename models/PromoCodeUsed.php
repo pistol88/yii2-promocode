@@ -16,6 +16,7 @@ class PromoCodeUsed extends \yii\db\ActiveRecord
         return [
             [['promocode_id', 'order_id', 'date'], 'required'],
             [['promocode_id', 'order_id', 'user'], 'integer'],
+            [['sum'],'number'],
             [['date'], 'safe'],
         ];
     }
@@ -28,6 +29,7 @@ class PromoCodeUsed extends \yii\db\ActiveRecord
             'order_id' => 'ID Заказа',
             'date' => 'Дата использования',
             'user' => 'Использовано пользователем',
+            'sum' => 'Сумма использования',
         ];
     }
 }

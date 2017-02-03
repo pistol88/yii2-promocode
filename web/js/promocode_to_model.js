@@ -7,6 +7,7 @@ usesgraphcrt.promocode = {
         $targetModel = $('[data-role=target-model]');
         $targetsList = $('[data-role=model-list]');
         $productModels = {};
+        console.log('promocode_to_model');
 
 
         $(document).on('click','[data-role=remove-target-item]',function () {

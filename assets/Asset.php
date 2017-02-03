@@ -12,6 +12,7 @@ class Asset extends AssetBundle
 
     public $js = [
         'js/promocode_to_model.js',
+        'js/promocode_cumulative.js',
     ];
 
     public $css = [

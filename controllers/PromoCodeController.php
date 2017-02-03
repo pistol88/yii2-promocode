@@ -1,6 +1,8 @@
 <?php
 namespace pistol88\promocode\controllers;
 
+use pistol88\promocode\models\PromocodeCondition;
+use pistol88\promocode\models\PromoCodeToCondition;
 use Yii;
 use pistol88\promocode\models\PromoCode;
 use pistol88\promocode\models\PromoCodeSearch;
@@ -14,6 +16,7 @@ use yii\helpers\Html;
 
 class PromoCodeController extends Controller
 {
+
     public function behaviors()
     {
         return [
@@ -65,19 +68,29 @@ class PromoCodeController extends Controller
             $targetModelList = $this->module->targetModelList;
         }
         if ($model->load(Yii::$app->request->post())) {
-            if  ($model->date_elapsed){
-                $model->date_elapsed = date('Y-m-d H:i:s',strtotime($model->date_elapsed));  
+            if ($model->date_elapsed) {
+                $model->date_elapsed = date('Y-m-d H:i:s', strtotime($model->date_elapsed));
             } else {
                 $model->date_elapsed = null;
+            }
+            $targets = Yii::$app->request->post();
+
+            if ($model->type == 'cumulative') {
+                $model->discount = 0;
             }
 
             $model->save();
 
-            $targets = Yii::$app->request->post();
-            if (isset($targets['targetModels']) && $targets['targetModels'] != null) {
-                $this->savePromocodeToModel($targets['targetModels'],$model->id);
+            if ($model->type == 'cumulative') {
+                if (isset($targets['Conditions']) && $targets['Conditions'] != null) {
+                    yii::$app->promocode->addConditions($targets['Conditions'], $model->id);
+                }
             }
-            if($backUrl = yii::$app->request->post('backUrl')) {
+
+            if (isset($targets['targetModels']) && $targets['targetModels'] != null) {
+                $this->savePromocodeToModel($targets['targetModels'], $model->id);
+            }
+            if ($backUrl = yii::$app->request->post('backUrl')) {
                 return $this->redirect($backUrl);
             } else {
                 return $this->redirect(['index']);
@@ -111,17 +124,18 @@ class PromoCodeController extends Controller
     {
         $model = $this->findModel($id);
         $promoCodeItems = PromocodeToItem::find()->where(['promocode_id' => $id])->all();
+        $promoCodeConditions = PromoCodeToCondition::find()->where(['promocode_id' => $id])->all();
         $targetModelList = [];
         $items = [];
+        $conditions = [];
         $usesModel = yii::$app->getModule('promocode')->usesModel;
-        $usesModelMap = ArrayHelper::map($usesModel::find()->all(),'id','username');
-        
+        $usesModelMap = ArrayHelper::map($usesModel::find()->all(), 'id', 'username');
 
 
         foreach ($promoCodeItems as $promoCodeItem) {
             $item_model = $promoCodeItem->item_model;
             $item = $item_model::findOne($promoCodeItem->item_id);
-            $items[] = ['['.$promoCodeItem->item_model.']['.$item->id.']' =>
+            $items[] = ['[' . $promoCodeItem->item_model . '][' . $item->id . ']' =>
                 [
                     'name' => $item->name,
                     'model' => $promoCodeItem->item_model,
@@ -130,6 +144,11 @@ class PromoCodeController extends Controller
             ];
         }
 
+        $conditions = PromocodeCondition::find()
+            ->where(['id' => ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
+            ->orderBy(['sum_start' => SORT_ASC])
+            ->all();
+
         if ($this->module->targetModelList) {
             $targetModelList = $this->module->targetModelList;
         }
@@ -137,16 +156,22 @@ class PromoCodeController extends Controller
 
             $targets = Yii::$app->request->post();
             if ($model->date_elapsed) {
-                $model->date_elapsed = date('Y-m-d H:i:s',strtotime($model->date_elapsed));
+                $model->date_elapsed = date('Y-m-d H:i:s', strtotime($model->date_elapsed));
             }
 
             $model->save();
 
-            if (isset($targets['targetModels']) && $targets['targetModels'] != null) {
-                $this->savePromocodeToModel($targets['targetModels'],$model->id);
+            if ($model->type == 'cumulative') {
+                if (isset($targets['Conditions']) && $targets['Conditions'] != null) {
+                    yii::$app->promocode->addConditions($targets['Conditions'], $model->id);
+                }
             }
 
-            if($backUrl = yii::$app->request->post('backUrl')) {
+            if (isset($targets['targetModels']) && $targets['targetModels'] != null) {
+                $this->savePromocodeToModel($targets['targetModels'], $model->id);
+            }
+
+            if ($backUrl = yii::$app->request->post('backUrl')) {
                 return $this->redirect($backUrl);
             } else {
                 return $this->redirect(['index']);
@@ -156,6 +181,7 @@ class PromoCodeController extends Controller
                 'model' => $model,
                 'targetModelList' => $targetModelList,
                 'items' => $items,
+                'conditions' => $conditions,
                 'usesModelMap' => $usesModelMap,
             ]);
         }
@@ -177,21 +203,22 @@ class PromoCodeController extends Controller
         }
     }
 
-    protected function savePromocodeToModel($productModels,$promoCodeId,$savedItems = null){
-        if ($productModels){
+    protected function savePromocodeToModel($productModels, $promoCodeId, $savedItems = null)
+    {
+        if ($productModels) {
             foreach ($productModels as $productModel => $modelItems) {
                 foreach ($modelItems as $id => $value) {
                     $model = PromocodeToItem::find()->where([
                         'promocode_id' => $promoCodeId,
                         'item_model' => $productModel,
-                        'item_id' =>$id,
+                        'item_id' => $id,
                     ])->one();
                     if (!$model) {
                         $model = new PromocodeToItem();
                         $model->promocode_id = $promoCodeId;
                         $model->item_model = $productModel;
                         $model->item_id = $id;
-                        if ($model->validate() && $model->save()){
+                        if ($model->validate() && $model->save()) {
                             // do nothing
                         } else var_dump($model->getErrors());
                     }
@@ -207,14 +234,14 @@ class PromoCodeController extends Controller
         $orders = $orderModel::find();
         $ordersCount = $orders->count();
 
-        $timeFrom01 = mktime(0, 0, 0, date("m")  , 1        ,   date("Y"));
-        $timeLast30 = mktime(0, 0, 0, date("m")-1, date("d"),   date("Y"));
+        $timeFrom01 = mktime(0, 0, 0, date("m"), 1, date("Y"));
+        $timeLast30 = mktime(0, 0, 0, date("m") - 1, date("d"), date("Y"));
 
         $data = [];
         $promoCodes = [];
 
         foreach ($orders->groupBy('promocode')->all() as $key => $value) {
-            array_push($promoCodes,$value->promocode);
+            array_push($promoCodes, $value->promocode);
         }
 
         $orders = $orderModel::find();
@@ -222,27 +249,27 @@ class PromoCodeController extends Controller
         foreach ($promoCodes as $key => $promocode) {
 
             $name = $promocode ? $promocode : "Без промокода";
-            $promocodeOrders = $orders->where(["promocode"=>$promocode]);
+            $promocodeOrders = $orders->where(["promocode" => $promocode]);
 
             $poClone = clone $promocodeOrders;
 
             $allTime = $poClone->count();
 
-            $time = date('Y-m-d H:i:s',$timeFrom01);
+            $time = date('Y-m-d H:i:s', $timeFrom01);
             $poClone = clone $promocodeOrders;
             $thisMonth = $poClone->andWhere("date > '$time'")->count();
 
-            $time = date('Y-m-d H:i:s',$timeLast30);
+            $time = date('Y-m-d H:i:s', $timeLast30);
             $poClone = clone $promocodeOrders;
             $lastMonth = $poClone->andWhere("date > '$time'")->count();
 
             $poClone = clone $promocodeOrders;
-            $avgSum = round($poClone->sum('cost') / ($allTime ? $allTime : 1),2);
+            $avgSum = round($poClone->sum('cost') / ($allTime ? $allTime : 1), 2);
 
             $ordersClone = clone $orders;
             $percent = round(
-                $ordersClone->where(["promocode"=>$promocode])
-                    ->count()/$ordersCount * 100,2);
+                $ordersClone->where(["promocode" => $promocode])
+                    ->count() / $ordersCount * 100, 2);
 
             $data[] = [
                 'name' => $name,
@@ -254,24 +281,24 @@ class PromoCodeController extends Controller
             ];
         }
 
-        return $this->render('stats',[
-            'promocodes'=>$data
+        return $this->render('stats', [
+            'promocodes' => $data
         ]);
     }
-    
+
     public function actionPeriodStatistic($dateStart = null, $dateStop = null)
     {
 
-        if(!$dateStart) {
-            $dateStart = date('Y-m-d H:i:s', (time()-(86400*30)));
+        if (!$dateStart) {
+            $dateStart = date('Y-m-d H:i:s', (time() - (86400 * 30)));
         } else {
             $dateStart = date('Y-m-d H:i:s', strtotime($dateStart));
         }
 
-        if(!$dateStop) {
+        if (!$dateStop) {
             $dateStop = date('Y-m-d H:i:s');
         } else {
-            $dateStop = date('Y-m-d H:i:s', strtotime($dateStop."+23 hours 59 minutes + 59 seconds"));
+            $dateStop = date('Y-m-d H:i:s', strtotime($dateStop . "+23 hours 59 minutes + 59 seconds"));
         }
 
         $orderModel = yii::$app->getModule('promocode')->orderModel;
@@ -282,7 +309,7 @@ class PromoCodeController extends Controller
         $promoCodes = [];
 
         foreach ($orders->groupBy('promocode')->all() as $key => $value) {
-            array_push($promoCodes,$value->promocode);
+            array_push($promoCodes, $value->promocode);
         }
 
         $orders = $orderModel::find()
@@ -292,7 +319,7 @@ class PromoCodeController extends Controller
         foreach ($promoCodes as $key => $promocode) {
 
             $name = $promocode ? $promocode : "Без промокода";
-            $promocodeOrders = $orders->where(["promocode"=>$promocode])
+            $promocodeOrders = $orders->where(["promocode" => $promocode])
                 ->andWhere("date >= '$dateStart'")
                 ->andWhere("date <= '$dateStop'");
 
@@ -304,14 +331,14 @@ class PromoCodeController extends Controller
             $statsPeriod = $poClone->andWhere("date >= '$dateStart'")->andWhere("date <= '$dateStop'")->count();
 
             $poClone = clone $promocodeOrders;
-            $avgSum = round($poClone->sum('cost') / ($allTime ? $allTime : 1),2);
+            $avgSum = round($poClone->sum('cost') / ($allTime ? $allTime : 1), 2);
 
             $ordersClone = clone $orders;
             $percent = round(
-                $ordersClone->where(["promocode"=>$promocode])
+                $ordersClone->where(["promocode" => $promocode])
                     ->andWhere("date >= '$dateStart'")
                     ->andWhere("date <= '$dateStop'")
-                    ->count()/$ordersCount * 100,2);
+                    ->count() / $ordersCount * 100, 2);
 
             $data[] = [
                 'name' => $name,
@@ -321,11 +348,35 @@ class PromoCodeController extends Controller
             ];
         }
 
-        return $this->render('stats-period',[
-            'promocodes'=>$data,
+        return $this->render('stats-period', [
+            'promocodes' => $data,
             'dateStart' => Html::encode($dateStart),
             'dateStop' => Html::encode($dateStop),
         ]);
+    }
+
+    public function actionAjaxDeleteCondition()
+    {
+        $target = Yii::$app->request->post();
+
+        $model = PromoCodeToCondition::find()
+            ->where([
+                'promocode_id' => $target['data']['promocodeId'],
+                'condition_id' => $target['data']['conditionId'],
+            ])->one();
+        if ($model) {
+            if ($model->delete()) {
+                \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return [
+                    'status' => 'success',
+                ];
+            } else return [
+                'status' => 'error',
+            ];
+        } else
+            return [
+                'status' => 'success',
+            ];
     }
 
 
@@ -344,7 +395,7 @@ class PromoCodeController extends Controller
                 return [
                     'status' => 'success',
                 ];
-            }   else return [
+            } else return [
                 'status' => 'error',
             ];
         } else

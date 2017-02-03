@@ -31,9 +31,13 @@ class PromoCodeUseController extends Controller
                 $message = 'Промокод удален!';
             } else {
                 yii::$app->promocode->enter($promocode);
-                $discount = yii::$app->promocode->get()->promocode->discount;
-                $message = 'Промокод применен, скидка '.$discount;
-                if (yii::$app->promocode->get()->promocode->type == 'percent') {
+                if (yii::$app->promocode->get()->promocode->type === 'cumulative' && empty(yii::$app->promocode->get()->promocode->getTransactions()->all())) {
+                    $discount = 0;
+                } else {
+                    $discount = yii::$app->promocode->get()->promocode->discount;
+                }
+                $message = 'Промокод применен, скидка ' . $discount;
+                if (yii::$app->promocode->get()->promocode->type != 'quantum') {
                     $message .= '%';
                 } else {
                     $message .= ' рублей';
