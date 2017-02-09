@@ -128,6 +128,17 @@ class Promocode extends Component
         return PromoCodeModel::findOne(['code' => $promoCode]);
     }
 
+    public function getPromoCodeByOrderId($orderId)
+    {
+        $promoCodeUse = PromoCodeUsed::find()->where(['order_id' => $orderId])->one();
+
+        if (!empty($promoCodeUse)) {
+            return PromoCodeModel::findOne($promoCodeUse->promocode_id);
+        } else {
+            return false;
+        }
+    }
+
     public function checkExists($code)
     {
         if ($promocodeModel = $this->getPromoCodeByCode($code)) {
@@ -203,10 +214,15 @@ class Promocode extends Component
     }
 
     public function getPromoCodeUsedSum($promoCodeId)
-    {   
+    {
         return $promoCodeUse = PromoCodeUsed::find()
             ->where(['promocode_id' => $promoCodeId])
             ->sum('sum');
+    }
+
+    public function clearPromoCodeUseHistory($orderId)
+    {
+        PromoCodeUsed::deleteAll(['order_id' => $orderId]);
     }
 
     public function checkPromoCodeCumulativeStatus($promoCodeId)
@@ -238,7 +254,6 @@ class Promocode extends Component
                 return false;
             }
         }
-
         if ($condition['value'] != $this->checkPromoCodeDiscount($promoCodeId)) {
             $this->setPromoCodeDiscount($promoCodeId, $condition['value']);
         }
@@ -281,7 +296,7 @@ class Promocode extends Component
         $isfirst = 0;
 
         foreach ($conditions as $key => $condition) {
-            
+
             if (!$isfirst++) {
                 if ($condition['sumStart'] == 0) {
                     if ($condition['percent'] != $this->checkPromoCodeDiscount($promoCodeId))
@@ -290,13 +305,13 @@ class Promocode extends Component
                     $this->setPromoCodeDiscount($promoCodeId, 0);
                 }
             }
-            
+
             $model = PromocodeCondition::find()
                 ->where([
                     'id' => $key,
                 ])
                 ->one();
-            
+
             if (!$model) {
                 $model = new PromocodeCondition();
                 $model->sum_start = $condition['sumStart'];
@@ -309,8 +324,24 @@ class Promocode extends Component
                 $model->value = $condition['percent'];
                 $model->save(false);
             }
-            
+
             $this->setPromoCodeToCondition($promoCodeId, $model->id);
+        }
+    }
+
+    public function rollbackPromoCodeUse($orderId)
+    {
+
+        $promoCode = $this->getPromoCodeByOrderId($orderId);
+
+        if ($promoCode) {
+            $this->clearPromoCodeUseHistory($orderId);
+            if ($promoCode->type != 'cumulative') {
+                return false;
+            } else {
+                $this->checkPromoCodeCumulativeStatus($promoCode->id);
+
+            }
         }
     }
 }

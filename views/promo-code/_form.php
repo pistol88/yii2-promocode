@@ -75,7 +75,7 @@ Asset::register($this);
                         <?= $form->field($model, 'discount')->textInput()->hint('Задайте процент или сумму') ?>
                     </div>
                 </div>
-                <div class="col-md-12 promocode-cumulative-form form-group <?= (empty($conditions)) ? 'hidden' : '' ?>">
+                <div class="col-md-12 promocode-cumulative-form form-group <?= (empty($conditions) || ($model->type != 'cumulative')) ? 'hidden' : '' ?>">
                     <div class="row text-center">
                         <?php if ($model->getTransactions()->all()) { ?>
                             <div class="col-md-6 alert alert-info">
@@ -85,7 +85,7 @@ Asset::register($this);
                             </div>
                         <?php } ?>
                         <div class="form form-inline cumulative-block">
-                            <?php if (isset($conditions) && $model->type === 'cumulative') { ?>
+                            <?php if (isset($conditions)) { ?>
                                 <?php foreach ($conditions as $condition) { ?>
                                     <div class="cumulative-row form-group">
                                         <input class="form-control" name="Conditions[<?= $condition['id']?>][sumStart]" type="text" value="<?= $condition['sum_start'] ?>" placeholder="От"> -
