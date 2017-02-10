@@ -1,7 +1,7 @@
 <?php
 namespace pistol88\promocode\controllers;
 
-use pistol88\promocode\models\PromocodeCondition;
+use pistol88\promocode\models\PromoCodeCondition;
 use pistol88\promocode\models\PromoCodeToCondition;
 use Yii;
 use pistol88\promocode\models\PromoCode;
@@ -165,7 +165,7 @@ class PromoCodeController extends Controller
             ];
         }
 
-        $conditions = PromocodeCondition::find()
+        $conditions = PromoCodeCondition::find()
             ->where(['id' => ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
             ->orderBy(['sum_start' => SORT_ASC])
             ->all();

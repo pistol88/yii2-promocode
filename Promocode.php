@@ -6,7 +6,7 @@ use pistol88\promocode\models\PromoCode as PromoCodeModel;
 use pistol88\promocode\models\PromoCodeUse;
 use pistol88\promocode\models\PromoCodeUsed;
 use pistol88\promocode\events\PromocodeEvent;
-use pistol88\promocode\models\PromocodeCondition;
+use pistol88\promocode\models\PromoCodeCondition;
 use pistol88\promocode\models\PromoCodeToCondition;
 use yii;
 
@@ -236,14 +236,14 @@ class Promocode extends Component
                 'promocode_id' => $promoCodeId,
             ])->all();
 
-        $condition = PromocodeCondition::find()
+        $condition = PromoCodeCondition::find()
             ->where(['id' => yii\helpers\ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
             ->andWhere(['<', 'sum_start', (int)$sum])
             ->andWhere(['>', 'sum_stop', (int)$sum])
             ->one();
 
         if (!$condition) {
-            $condition = PromocodeCondition::find()
+            $condition = PromoCodeCondition::find()
                 ->where(['id' => yii\helpers\ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
                 ->andWhere(['>', 'sum_stop', $sum])
                 ->orderBy(['sum_stop' => SORT_DESC])
@@ -311,14 +311,14 @@ class Promocode extends Component
                 }
             }
 
-            $model = PromocodeCondition::find()
+            $model = PromoCodeCondition::find()
                 ->where([
                     'id' => $key,
                 ])
                 ->one();
 
             if (!$model) {
-                $model = new PromocodeCondition();
+                $model = new PromoCodeCondition();
                 $model->sum_start = $condition['sumStart'];
                 $model->sum_stop = $condition['sumStop'];
                 $model->value = $condition['percent'];

@@ -3,7 +3,7 @@
 namespace pistol88\promocode\models;
 
 
-class PromocodeCondition extends \yii\db\ActiveRecord
+class PromoCodeCondition extends \yii\db\ActiveRecord
 {
 
     public static function tableName()
