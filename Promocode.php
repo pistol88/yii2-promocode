@@ -228,7 +228,7 @@ class Promocode extends Component
 
     public function checkPromoCodeCumulativeStatus($promoCodeId)
     {
-
+        $discountValue = 0;
         $sum = $this->getPromoCodeUsedSum($promoCodeId);
 
         $promoCodeConditions = PromoCodeToCondition::find()
@@ -241,33 +241,32 @@ class Promocode extends Component
             ->andWhere(['<', 'sum_start', (int)$sum])
             ->andWhere(['>', 'sum_stop', (int)$sum])
             ->one();
-
-        if (!$condition) {
-            if	(
-            $condition = PromoCodeCondition::find()
-                ->where(['id' => yii\helpers\ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
-                ->andWhere(['>', 'sum_start', $sum])
-                ->orderBy(['sum_start' => SORT_DESC])
-                ->one()
-            ) { $this->setPromoCodeDiscount($promoCodeId, 0); }
-            $condition = PromoCodeCondition::find()
-                ->where(['id' => yii\helpers\ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
-                ->andWhere(['>', 'sum_stop', $sum])
-                ->orderBy(['sum_stop' => SORT_DESC])
-                ->one();
-            if ($condition['sum_start'] > $sum) {
-                return false;
-            }
-            if ($condition['sum_stop'] < $sum) {
-                return false;
-            }
-        }
-        if ($condition['value'] != $this->checkPromoCodeDiscount($promoCodeId)) {
-            $this->setPromoCodeDiscount($promoCodeId, $condition['value']);
+        if ($condition) {
+            $discountValue = $condition['value'];
         } else {
-            $this->setPromoCodeDiscount($promoCodeId,0);
-        }
+            $condition = PromoCodeCondition::find()
+                ->where(['id' => yii\helpers\ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
+                ->orderBy(['sum_start' => SORT_ASC])
+                ->limit(1)
+                ->one();
 
+            if ($condition  && $condition['sum_start'] > $sum ) {
+                $discountValue = 0;
+            } else {
+                $condition = PromoCodeCondition::find()
+                    ->where(['id' => yii\helpers\ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
+                    ->orderBy(['sum_stop' => SORT_DESC])
+                    ->limit(1)
+                    ->one();
+
+                if ($condition  && $condition['sum_stop'] < $sum ) {
+                    $discountValue = $condition['value'];
+                }
+            }
+        }
+        if ($discountValue != $this->checkPromoCodeDiscount($promoCodeId)) {
+            $this->setPromoCodeDiscount($promoCodeId, $discountValue);
+        }
 
     }
 
