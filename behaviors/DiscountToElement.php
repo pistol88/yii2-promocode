@@ -20,7 +20,13 @@ class DiscountToElement extends Behavior
     public function doDiscount($event)
     {
         if (yii::$app->promocode->has() && $targetModels = yii::$app->promocode->getTargetModels()) {
-            $discount = yii::$app->promocode->get()->promocode->discount;
+            
+            if (!yii::$app->promocode->get()->promocode->getTransactions()->all() && yii::$app->promocode->get()->promocode->type == 'cumulative') {
+                $discount = 0;
+            } else {
+                $discount = yii::$app->promocode->get()->promocode->discount;
+            }
+            
             if (yii::$app->promocode->get()->promocode->type == 'percent' || yii::$app->promocode->get()->promocode->type == 'cumulative'
                 || empty(yii::$app->promocode->get()->promocode->type)) {
                 if ($discount > 0 && $discount <= 100 && $event->cost > 0) {

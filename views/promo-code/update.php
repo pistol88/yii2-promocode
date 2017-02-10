@@ -6,9 +6,8 @@ use yii\helpers\Html;
 /* @var $model common\models\PromoCodes */
 
 $this->title = 'Изменить промокод: ' . ' ' . $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Промокод', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Изменить';
+$this->params['breadcrumbs'][] = ['label' => 'Промокоды', 'url' => ['index']];
+$this->params['breadcrumbs'][] = 'Изменить промокод '.$model->code;
 ?>
 <div class="promo-codes-update">
 

@@ -1,6 +1,6 @@
 <?php
 $this->title = 'Статистика по промокодам';
-$this->params['breadcrumbs'][] = ['label' => 'Промокод', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Промокоды', 'url' => ['index']];
 $this->params['breadcrumbs'][] = 'Статистика по промокодам';
 ?>
 <div class="promo-codes-stats">

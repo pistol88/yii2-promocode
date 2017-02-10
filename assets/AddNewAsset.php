@@ -12,6 +12,7 @@ class AddNewAsset extends AssetBundle
 
     public $js = [
         'js/add_new.js',
+        'js/promocode_cumulative.js',
     ];
     
     public $css = [

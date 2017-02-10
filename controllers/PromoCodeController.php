@@ -109,12 +109,33 @@ class PromoCodeController extends Controller
 
         $json = [];
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $json['result'] = 'success';
-            $json['promocode'] = $model->code;
-        } else {
-            $json['result'] = 'fail';
-            $json['errors'] = current($model->getFirstErrors());
+        if ($model->load(Yii::$app->request->post())) {
+            $targets = Yii::$app->request->post();
+            if ($model->date_elapsed) {
+                $model->date_elapsed = date('Y-m-d H:i:s', strtotime($model->date_elapsed));
+            } else {
+                $model->date_elapsed = null;
+            }
+
+            if ($model->type == 'cumulative') {
+                $model->discount = 0;
+            }
+
+            if  ($model->save()) {
+
+                if ($model->type == 'cumulative') {
+                    if (isset($targets['Conditions']) && $targets['Conditions'] != null) {
+                        yii::$app->promocode->addConditions($targets['Conditions'], $model->id);
+                    }
+                }
+
+                $json['result'] = 'success';
+                $json['promocode'] = $model->code;
+            } else {
+                $json['result'] = 'fail';
+                $json['errors'] = current($model->getFirstErrors());
+            }
+
         }
 
         return json_encode($json);

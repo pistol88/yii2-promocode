@@ -3,7 +3,7 @@
 use nex\datepicker\DatePicker;
 
 $this->title = 'Статистика по промокодам за период';
-$this->params['breadcrumbs'][] = ['label' => 'Промокод', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Промокоды', 'url' => ['index']];
 $this->params['breadcrumbs'][] = 'Статистика по промокодам за период';
 ?>
 <div class="promo-codes-stats">
