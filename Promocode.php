@@ -243,6 +243,13 @@ class Promocode extends Component
             ->one();
 
         if (!$condition) {
+            if	(
+            $condition = PromoCodeCondition::find()
+                ->where(['id' => yii\helpers\ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
+                ->andWhere(['>', 'sum_start', $sum])
+                ->orderBy(['sum_start' => SORT_DESC])
+                ->one()
+            ) { $this->setPromoCodeDiscount($promoCodeId, 0); }
             $condition = PromoCodeCondition::find()
                 ->where(['id' => yii\helpers\ArrayHelper::getColumn($promoCodeConditions, 'condition_id')])
                 ->andWhere(['>', 'sum_stop', $sum])
