@@ -43,6 +43,7 @@ class Promocode extends Component
 
         $promocode = $this->promocode;
 
+
         if (!$promocodeModel = $promocode::findOne(['code' => $promocodeId])) {
             throw new \Exception('Промокод не найден');
         }
@@ -256,6 +257,10 @@ class Promocode extends Component
         }
         if ($condition['value'] != $this->checkPromoCodeDiscount($promoCodeId)) {
             $this->setPromoCodeDiscount($promoCodeId, $condition['value']);
+        }
+
+        if ($condition['value'] > $this->checkPromoCodeDiscount($promoCodeId)) {
+            $this->setPromoCodeDiscount($promoCodeId, 0);
         }
 
     }
