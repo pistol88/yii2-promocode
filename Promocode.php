@@ -257,11 +257,10 @@ class Promocode extends Component
         }
         if ($condition['value'] != $this->checkPromoCodeDiscount($promoCodeId)) {
             $this->setPromoCodeDiscount($promoCodeId, $condition['value']);
+        } else {
+            $this->setPromoCodeDiscount($promoCodeId,0);
         }
 
-        if ($condition['value'] > $this->checkPromoCodeDiscount($promoCodeId)) {
-            $this->setPromoCodeDiscount($promoCodeId, 0);
-        }
 
     }
 
@@ -342,7 +341,7 @@ class Promocode extends Component
         if ($promoCode) {
             $this->clearPromoCodeUseHistory($orderId);
             if ($promoCode->type != 'cumulative') {
-                return false;
+                return true;
             } else {
                 $this->checkPromoCodeCumulativeStatus($promoCode->id);
 
