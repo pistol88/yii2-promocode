@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
         <?php if(yii::$app->promocode->has()) { ?>
             <p class="promo-code-discount">
                 Ваша скидка: <?php
-                    if (yii::$app->promocode->get()->promocode->type === 'cumulative' && empty(yii::$app->promocode->get()->promocode->getTransactions()->all())) {
+                    if (yii::$app->promocode->get()->promocode->type === 'cumulative' && yii::$app->promocode->get()->promocode->getTransactions()->all()) {
                     echo 0;
                 } else {
                     echo yii::$app->promocode->get()->promocode->discount;
