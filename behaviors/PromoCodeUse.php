@@ -17,7 +17,9 @@ class PromoCodeUse extends Behavior
         if ($event->model->promocode){
             $promocode = yii::$app->promocode->checkExists($event->model->promocode);
             yii::$app->promocode->setPromoCodeUse($promocode,$event->model->id,$event->model->base_cost);
-            yii::$app->promocode->checkPromoCodeCumulativeStatus($promocode->id);
+            if ($promocode->type == 'cumulative') {
+                yii::$app->promocode->checkPromoCodeCumulativeStatus($promocode->id);
+            }
         }
 
     }
