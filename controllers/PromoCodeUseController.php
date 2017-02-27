@@ -31,7 +31,8 @@ class PromoCodeUseController extends Controller
                 $message = 'Промокод удален!';
             } else {
                 yii::$app->promocode->enter($promocode);
-                if (yii::$app->promocode->get()->promocode->type === 'cumulative' && empty(yii::$app->promocode->get()->promocode->getTransactions()->all())) {
+                $transactions = yii::$app->promocode->get()->promocode->getTransactions()->all();
+                if (yii::$app->promocode->get()->promocode->type === 'cumulative' && empty($transactions)) {
                     $discount = 0;
                 } else {
                     $discount = yii::$app->promocode->get()->promocode->discount;
