@@ -39,6 +39,7 @@ php yii migrate --migrationPath=vendor/pistol88/yii2-promocode/migrations
         //..
         'promocode' => [
             'class' => 'pistol88\promocode\Module',
+            'usesModel' => 'dektrium\user\models\User', //Модель пользователей
             //Указываем модели, к которым будем привязывать промокод
             'targetModelList' => [
                 'Категории' => [
