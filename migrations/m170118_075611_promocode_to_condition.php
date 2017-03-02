@@ -21,7 +21,7 @@ class m170118_075611_promocode_to_condition extends Migration
             [
                 'id'=> $this->primaryKey(11),
                 'promocode_id'=> $this->integer(11)->notNull(),
-                'cindition_id'=> $this->integer(11)->notNull(),
+                'condition_id'=> $this->integer(11)->notNull(),
             ],$tableOptions
         );
     }
