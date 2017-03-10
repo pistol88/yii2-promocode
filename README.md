@@ -39,6 +39,8 @@ php yii migrate --migrationPath=vendor/pistol88/yii2-promocode/migrations
         //..
         'promocode' => [
             'class' => 'pistol88\promocode\Module',
+            'informer' => 'pistol88\cart\widgets\CartInformer', // namespace to custom cartInformer widget
+            'informerSettings' => [], //settings for custom cartInformer widget
             'usesModel' => 'dektrium\user\models\User', //Модель пользователей
             //Указываем модели, к которым будем привязывать промокод
             'targetModelList' => [
