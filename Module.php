@@ -8,6 +8,8 @@ class Module extends \yii\base\Module
     public $targetModelList = null;
     public $usesModel = null;
     public $orderModel = null;
+    public $informer = 'pistol88\cart\widgets\CartInformer';
+    public $informerSettings = [];
     
     public function init()
     {
