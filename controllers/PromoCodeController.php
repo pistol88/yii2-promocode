@@ -148,10 +148,12 @@ class PromoCodeController extends Controller
         $promoCodeConditions = PromoCodeToCondition::find()->where(['promocode_id' => $id])->all();
         $targetModelList = [];
         $items = [];
-        $conditions = [];
-        $usesModel = yii::$app->getModule('promocode')->usesModel;
-        $usesModelMap = ArrayHelper::map($usesModel::find()->all(), 'id', 'username');
 
+        if($usesModel = yii::$app->getModule('promocode')->usesModel) {
+            $usesModelMap = ArrayHelper::map($usesModel::find()->all(), 'id', 'username');
+        } else {
+            $usesModelMap = [];
+        }
 
         foreach ($promoCodeItems as $promoCodeItem) {
             $item_model = $promoCodeItem->item_model;
