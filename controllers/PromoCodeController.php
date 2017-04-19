@@ -149,10 +149,10 @@ class PromoCodeController extends Controller
         $targetModelList = [];
         $items = [];
 
-        if($usesModel = yii::$app->getModule('promocode')->usesModel) {
-            $usesModelMap = ArrayHelper::map($usesModel::find()->all(), 'id', 'username');
+        if($clientsModel = yii::$app->getModule('promocode')->usesModel) {
+            $clientsModelMap = ArrayHelper::map($clientsModel::find()->all(), 'id', 'username');
         } else {
-            $usesModelMap = [];
+            $clientsModelMap = [];
         }
 
         foreach ($promoCodeItems as $promoCodeItem) {
@@ -205,7 +205,7 @@ class PromoCodeController extends Controller
                 'targetModelList' => $targetModelList,
                 'items' => $items,
                 'conditions' => $conditions,
-                'usesModelMap' => $usesModelMap,
+                'usesModelMap' => $clientsModelMap,
             ]);
         }
     }

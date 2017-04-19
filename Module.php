@@ -6,7 +6,7 @@ class Module extends \yii\base\Module
     public $adminRoles = ['admin', 'superadmin'];
     public $fields = [];
     public $targetModelList = null;
-    public $usesModel = null;
+    public $clientsModel = null;
     public $orderModel = null;
     public $informer = 'pistol88\cart\widgets\CartInformer';
     public $informerSettings = [];
