@@ -12,7 +12,6 @@ class ToolsController  extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['product-window'],
                 'rules' => [
                     [
                         'allow' => true,

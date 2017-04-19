@@ -128,7 +128,7 @@ Asset::register($this);
                             ],
                             'removeButton' => false,
                             'pluginOptions' => [
-                                'autoclose'=>true,
+                                'autoclose' => true,
                                 'format' => 'd.m.yyyy',
                             ],
                         ])->label('Дата истечения промокода')->hint('Выберите дату истечения срока действия промокода')
@@ -161,7 +161,7 @@ Asset::register($this);
                                     ]
                                 ]);
                                 ?>
-                                <iframe src="/promocode/tools/product-window?targetModel=<?= $modelName ?>" frameborder="0" style="width: 100%; height: 400px;">
+                                <iframe src="<?=Url::toRoute(['/promocode/tools/product-window', 'targetModel' => $modelName]); ?>" frameborder="0" style="width: 100%; height: 400px;">
                                 </iframe>
                                 <?php
                                 Modal::end();

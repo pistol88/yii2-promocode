@@ -58,8 +58,6 @@ class PromoCodeController extends Controller
 
     public function actionCreate()
     {
-
-
         $model = new PromoCode();
         $targetModelList = [];
 
@@ -425,7 +423,5 @@ class PromoCodeController extends Controller
             return [
                 'status' => 'success',
             ];
-
     }
-
 }
